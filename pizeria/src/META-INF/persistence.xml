@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+  <persistence-unit name="pizeriaPU" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <class>Logica.Salsa</class>
+    <class>Logica.Vegetal</class>
+    <class>Logica.Factura</class>
+    <class>Logica.ItemPedido</class>
+    <class>Logica.Ingrediente</class>
+    <class>Logica.Carne</class>
+    <class>Logica.Pizza</class>
+    <class>controlador.ControladorFactura</class>
+    <properties>
+      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://pgsql:5432/calexvt"/>
+      <property name="javax.persistence.jdbc.password" value="calexvt"/>
+      <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+      <property name="javax.persistence.jdbc.user" value="calexvt"/>
+    </properties>
+  </persistence-unit>
+</persistence>
