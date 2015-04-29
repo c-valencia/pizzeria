@@ -9,7 +9,35 @@
 
 package controlador;
 
+import persistencia.Conexion;
+import persistencia.DaoPizza;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import Logica.Pizza;
+
 
 public class ControladorPizza {
 
-} // Fin de la clase ControladorPizza
+    private Conexion conn;
+    private DaoPizza daoPizza;
+    
+    public ControladorPizza(){
+        conn = new Conexion();
+        daoPizza = new DaoPizza(conn.getConn());
+    }
+    
+    public boolean ingresarPizza(String nombre, int tamanio, String presentacion, double precio, byte[] foto){
+       boolean resultado = false;
+       Pizza newPizza = new Pizza(nombre, tamanio, presentacion, precio, foto);
+       try{
+           daoPizza.create(newPizza);
+           resultado=true;
+       } catch (Exception ex) {
+            Logger.getLogger(ControladorPizza.class.getName()).log(Level.SEVERE, null, ex);
+        }
+       
+       return resultado;
+    }
+    
+    
+} 

@@ -59,6 +59,14 @@ public class Pizza implements Serializable {
     public Pizza(Integer pizzaId) {
         this.pizzaId = pizzaId;
     }
+    
+    public Pizza(String nombre, int tamanio, String precentacion, double precio, byte[] foto){
+        this.nombre=nombre;
+        this.tamanio=tamanio;
+        this.precentacion=precentacion;
+        this.precio=precio;
+        this.foto=foto;
+    }
 
     public Integer getPizzaId() {
         return pizzaId;
