@@ -39,5 +39,30 @@ public class ControladorPizza {
        return resultado;
     }
     
+    public Pizza buscarPizza(int id){
+        Pizza pizza = null;
+        try{
+            pizza=daoPizza.findPizza(id);
+        }catch (Exception ex) {
+            Logger.getLogger(ControladorPizza.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return pizza;
+    }
+    
+    public boolean eliminarPizza(int id){
+        boolean respuesta = false;
+        try{
+            daoPizza.destroy(id);
+                
+            respuesta = true;
+        }catch (Exception ex) {
+            
+            Logger.getLogger(ControladorPizza.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return respuesta;
+    }
+            
+            
+    
     
 } 

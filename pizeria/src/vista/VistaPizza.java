@@ -18,6 +18,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import controlador.ControladorPizza;
 import javax.swing.JOptionPane;
+import Logica.Pizza;
 /**
  *
  * @author JULIAN GARCIA RICO (1225435) DIEGO FERNANDO BEDOYA (1327749) CRISTIAN
@@ -40,6 +41,18 @@ public class VistaPizza extends javax.swing.JFrame {
          presentacion="";
         tamanio = 0;
         precio=0.0;
+        botonEliminar.setEnabled(false);
+        botonModificar.setEnabled(false);
+    }
+    
+    public void ocultarBotones(){
+        botonEliminar.setEnabled(false);
+        botonModificar.setEnabled(false);
+    }
+    
+     public void mostrarBotones(){
+        botonEliminar.setEnabled(true);
+        botonModificar.setEnabled(true);
     }
     
     public void llenadoCampos(){
@@ -107,8 +120,9 @@ public class VistaPizza extends javax.swing.JFrame {
         botonGuardar = new javax.swing.JButton();
         botonBuscar = new javax.swing.JButton();
         botonEliminar = new javax.swing.JButton();
-        botonLimpiar = new javax.swing.JButton();
+        botonModificar = new javax.swing.JButton();
         tBusqueda = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -137,10 +151,27 @@ public class VistaPizza extends javax.swing.JFrame {
         });
 
         botonBuscar.setText("BUSCAR");
+        botonBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonBuscarActionPerformed(evt);
+            }
+        });
 
         botonEliminar.setText("ELIMINAR");
+        botonEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonEliminarActionPerformed(evt);
+            }
+        });
 
-        botonLimpiar.setText("LIMPIAR");
+        botonModificar.setText("MODIFICAR");
+        botonModificar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonModificarActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("LIMPIAR");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -148,6 +179,23 @@ public class VistaPizza extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(52, 52, 52)
+                        .addComponent(botonGuardar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(tBusqueda)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(botonBuscar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(botonEliminar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(botonModificar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton1))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(44, 44, 44)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -168,20 +216,8 @@ public class VistaPizza extends javax.swing.JFrame {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(tPresentacion)
                                     .addComponent(tPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(botonFoto)))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(52, 52, 52)
-                        .addComponent(botonGuardar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(botonBuscar)
-                                .addGap(12, 12, 12)
-                                .addComponent(botonEliminar))
-                            .addComponent(tBusqueda))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(botonLimpiar)))
-                .addContainerGap(108, Short.MAX_VALUE))
+                                    .addComponent(botonFoto))))))
+                .addContainerGap(43, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -211,7 +247,8 @@ public class VistaPizza extends javax.swing.JFrame {
                     .addComponent(botonGuardar)
                     .addComponent(botonBuscar)
                     .addComponent(botonEliminar)
-                    .addComponent(botonLimpiar))
+                    .addComponent(botonModificar)
+                    .addComponent(jButton1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(tBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(55, Short.MAX_VALUE))
@@ -239,6 +276,52 @@ public class VistaPizza extends javax.swing.JFrame {
         }
     
     }//GEN-LAST:event_botonGuardarActionPerformed
+
+    private void botonBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonBuscarActionPerformed
+        
+       try{ 
+           Pizza temp = controller.buscarPizza(Integer.parseInt(tBusqueda.getText()));
+           
+            if(temp==null){
+                JOptionPane.showMessageDialog(null, "La pizza no se encuentra registrada en el Sistema");
+                
+            }else{
+                String nombre = temp.getNombre();
+                String tamanio = ""+temp.getTamanio();
+                String presentacion = temp.getPrecentacion();
+                String precio = ""+temp.getPrecio();
+                
+                tNombre.setText(nombre);
+                tPresentacion.setText(presentacion);
+                tTamanio.setText(tamanio);
+                tPrecio.setText(precio);
+                 mostrarBotones();
+            }
+       }catch(NumberFormatException e){
+           JOptionPane.showMessageDialog(null, "Escriba un valor númerico para la busqueda");
+           
+       }
+        
+      
+    }//GEN-LAST:event_botonBuscarActionPerformed
+
+    private void botonEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonEliminarActionPerformed
+            int id = Integer.parseInt(tBusqueda.getText());
+            if(controller.eliminarPizza(id)==true){
+                JOptionPane.showMessageDialog(null, "La pizza con el ID "+id+" fue eliminada con exito.");
+            }else{
+                 JOptionPane.showMessageDialog(null, "La pizza con el ID "+id+" no pudo ser eliminada con exito.");
+            }
+            
+        
+        
+        
+        ocultarBotones();
+    }//GEN-LAST:event_botonEliminarActionPerformed
+
+    private void botonModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonModificarActionPerformed
+         ocultarBotones();
+    }//GEN-LAST:event_botonModificarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -280,7 +363,8 @@ public class VistaPizza extends javax.swing.JFrame {
     private javax.swing.JButton botonEliminar;
     private javax.swing.JButton botonFoto;
     private javax.swing.JButton botonGuardar;
-    private javax.swing.JButton botonLimpiar;
+    private javax.swing.JButton botonModificar;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
