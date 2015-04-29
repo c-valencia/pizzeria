@@ -5,8 +5,16 @@
  */
 package vista;
 
+import java.awt.Image;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.stage.FileChooser;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 
 /**
@@ -21,6 +29,37 @@ public class VistaPizza extends javax.swing.JFrame {
      */
     public VistaPizza() {
         initComponents();
+    }
+    
+    
+    public byte [] mapabist(){
+         byte[] bytes = new byte[1024];
+            JFileChooser fileChooser = new JFileChooser();
+        int returnValue = fileChooser.showOpenDialog(null);
+        //if (returnValue == JFileChooser.APPROVE_OPTION) {
+          File selectedFile = fileChooser.getSelectedFile();
+          System.out.println(selectedFile.getName());
+       // }
+         try {
+              FileInputStream fis = new FileInputStream(selectedFile);
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            byte[] buf = new byte[1024];
+            try {
+                for (int readNum; (readNum = fis.read(buf)) != -1;) {
+                    bos.write(buf, 0, readNum);
+                    System.out.println("read " + readNum + " bytes,");
+                }
+            } catch (IOException ex) {
+                System.out.print("ocurrio un error");
+            }
+           
+            //bytes is the ByteArray we need
+            bytes = bos.toByteArray();
+            
+         } catch (FileNotFoundException ex) {
+            Logger.getLogger(VistaPizza.class.getName()).log(Level.SEVERE, null, ex);
+        }
+         return bytes;
     }
 
     /**
@@ -124,12 +163,10 @@ public class VistaPizza extends javax.swing.JFrame {
 
     private void botonFotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonFotoActionPerformed
         
-        JFileChooser fileChooser = new JFileChooser();
-        int returnValue = fileChooser.showOpenDialog(null);
-        if (returnValue == JFileChooser.APPROVE_OPTION) {
-          File selectedFile = fileChooser.getSelectedFile();
-          System.out.println(selectedFile.getName());
-        }
+    ImageIcon Imag = new ImageIcon( mapabist());
+    jLabel1.setIcon(Imag);
+    
+        
     }//GEN-LAST:event_botonFotoActionPerformed
 
     /**
