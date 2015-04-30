@@ -1,28 +1,28 @@
-/** 
- * Nombre del Archivo: ItemPedidoJpaController.java 
- * Fecha de Creacion: 28/04/2015 
- * Autores: 	JULIAN GARCIA RICO (1225435)
-		DIEGO FERNANDO BEDOYA (1327749)
-		CRISTIAN ALEXANDER VALENCIA TORRES (1329454)
-		OSCAR STEVEN ROMERO BERON (1326750) 
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package persistencia;
 
-import Logica.ItemPedido;
-import Logica.ItemPedidoPK;
 import java.io.Serializable;
-import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import Logica.Factura;
+import Logica.ItemPedido;
+import Logica.ItemPedidoPK;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import persistencia.exceptions.NonexistentEntityException;
 import persistencia.exceptions.PreexistingEntityException;
 
-
+/**
+ *
+ * @author android
+ */
 public class DaoItemPedido implements Serializable {
 
     public DaoItemPedido(EntityManagerFactory emf) {
@@ -38,11 +38,21 @@ public class DaoItemPedido implements Serializable {
         if (itemPedido.getItemPedidoPK() == null) {
             itemPedido.setItemPedidoPK(new ItemPedidoPK());
         }
+        itemPedido.getItemPedidoPK().setFacturaId(itemPedido.getFactura().getFacturaId());
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+            Factura factura = itemPedido.getFactura();
+            if (factura != null) {
+                factura = em.getReference(factura.getClass(), factura.getFacturaId());
+                itemPedido.setFactura(factura);
+            }
             em.persist(itemPedido);
+            if (factura != null) {
+                factura.getItemPedidoCollection().add(itemPedido);
+                factura = em.merge(factura);
+            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             if (findItemPedido(itemPedido.getItemPedidoPK()) != null) {
@@ -57,11 +67,27 @@ public class DaoItemPedido implements Serializable {
     }
 
     public void edit(ItemPedido itemPedido) throws NonexistentEntityException, Exception {
+        itemPedido.getItemPedidoPK().setFacturaId(itemPedido.getFactura().getFacturaId());
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+            ItemPedido persistentItemPedido = em.find(ItemPedido.class, itemPedido.getItemPedidoPK());
+            Factura facturaOld = persistentItemPedido.getFactura();
+            Factura facturaNew = itemPedido.getFactura();
+            if (facturaNew != null) {
+                facturaNew = em.getReference(facturaNew.getClass(), facturaNew.getFacturaId());
+                itemPedido.setFactura(facturaNew);
+            }
             itemPedido = em.merge(itemPedido);
+            if (facturaOld != null && !facturaOld.equals(facturaNew)) {
+                facturaOld.getItemPedidoCollection().remove(itemPedido);
+                facturaOld = em.merge(facturaOld);
+            }
+            if (facturaNew != null && !facturaNew.equals(facturaOld)) {
+                facturaNew.getItemPedidoCollection().add(itemPedido);
+                facturaNew = em.merge(facturaNew);
+            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
@@ -90,6 +116,11 @@ public class DaoItemPedido implements Serializable {
                 itemPedido.getItemPedidoPK();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The itemPedido with id " + id + " no longer exists.", enfe);
+            }
+            Factura factura = itemPedido.getFactura();
+            if (factura != null) {
+                factura.getItemPedidoCollection().remove(itemPedido);
+                factura = em.merge(factura);
             }
             em.remove(itemPedido);
             em.getTransaction().commit();
@@ -145,5 +176,5 @@ public class DaoItemPedido implements Serializable {
             em.close();
         }
     }
-
-} // Fin de la clase DaoItemPedido
+    
+}

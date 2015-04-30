@@ -1,32 +1,33 @@
-/** 
- * Nombre del Archivo: Factura.java 
- * Fecha de Creacion: 28/04/2015 
- * Autores: 	JULIAN GARCIA RICO (1225435)
-		DIEGO FERNANDO BEDOYA (1327749)
-		CRISTIAN ALEXANDER VALENCIA TORRES (1329454)
-		OSCAR STEVEN ROMERO BERON (1326750) 
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package Logica;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
-
+/**
+ *
+ * @author android
+ */
 @Entity
-@Table(name = "factura")
+@Table(catalog = "pizeria", schema = "public")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Factura.findAll", query = "SELECT f FROM Factura f"),
@@ -36,16 +37,16 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Factura implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "factura_id")
+    @Column(name = "factura_id", nullable = false)
     private Integer facturaId;
-    @Column(name = "fecha")
     @Temporal(TemporalType.DATE)
     private Date fecha;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "preciototal")
+    @Column(precision = 17, scale = 17)
     private Double preciototal;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "factura")
+    private Collection<ItemPedido> itemPedidoCollection;
 
     public Factura() {
     }
@@ -78,6 +79,15 @@ public class Factura implements Serializable {
         this.preciototal = preciototal;
     }
 
+    @XmlTransient
+    public Collection<ItemPedido> getItemPedidoCollection() {
+        return itemPedidoCollection;
+    }
+
+    public void setItemPedidoCollection(Collection<ItemPedido> itemPedidoCollection) {
+        this.itemPedidoCollection = itemPedidoCollection;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -102,5 +112,5 @@ public class Factura implements Serializable {
     public String toString() {
         return "Logica.Factura[ facturaId=" + facturaId + " ]";
     }
-
-} // Fin de la clase Factura
+    
+}
