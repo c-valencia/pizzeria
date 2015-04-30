@@ -11,10 +11,10 @@
     <class>Logica.Pizza</class>
     <class>controlador.ControladorFactura</class>
     <properties>
-      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://pgsql:5432/calexvt"/>
-      <property name="javax.persistence.jdbc.password" value="calexvt"/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/pizeria"/>
+      <property name="javax.persistence.jdbc.password" value="univalle"/>
       <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
-      <property name="javax.persistence.jdbc.user" value="calexvt"/>
+      <property name="javax.persistence.jdbc.user" value="univalle"/>
     </properties>
   </persistence-unit>
 </persistence>

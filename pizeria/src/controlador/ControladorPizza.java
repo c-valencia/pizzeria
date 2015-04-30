@@ -61,7 +61,20 @@ public class ControladorPizza {
         }
         return respuesta;
     }
+    
+    public boolean modificarPizza(Pizza pizza){
+        boolean resultado = false;
+        try{
+            daoPizza.edit(pizza);
+            resultado = true;
             
+        }catch (Exception ex) {
+            
+            Logger.getLogger(ControladorPizza.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return resultado;
+    }
             
     
     

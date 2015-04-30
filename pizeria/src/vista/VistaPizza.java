@@ -30,6 +30,7 @@ public class VistaPizza extends javax.swing.JFrame {
       private String nombre, presentacion;
       private int tamanio;
       private double precio;
+      private Pizza temp; 
     /**
      * Creates new form VistaPizza
      */
@@ -43,6 +44,7 @@ public class VistaPizza extends javax.swing.JFrame {
         precio=0.0;
         botonEliminar.setEnabled(false);
         botonModificar.setEnabled(false);
+        temp = new Pizza();
     }
     
     public void ocultarBotones(){
@@ -280,7 +282,7 @@ public class VistaPizza extends javax.swing.JFrame {
     private void botonBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonBuscarActionPerformed
         
        try{ 
-           Pizza temp = controller.buscarPizza(Integer.parseInt(tBusqueda.getText()));
+           temp = controller.buscarPizza(Integer.parseInt(tBusqueda.getText()));
            
             if(temp==null){
                 JOptionPane.showMessageDialog(null, "La pizza no se encuentra registrada en el Sistema");
@@ -320,7 +322,17 @@ public class VistaPizza extends javax.swing.JFrame {
     }//GEN-LAST:event_botonEliminarActionPerformed
 
     private void botonModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonModificarActionPerformed
-         ocultarBotones();
+        temp.setNombre(tNombre.getText());
+        temp.setPrecentacion(tPresentacion.getText());
+        temp.setTamanio(Integer.parseInt(tTamanio.getText()));
+        temp.setPrecio(Double.parseDouble(tPrecio.getText()));
+        if(controller.modificarPizza(temp)==true){
+            JOptionPane.showMessageDialog(null, "La pizza con el Nombre "+temp.getNombre()+" fue modificada con exito");
+        }else{
+            JOptionPane.showMessageDialog(null, "La pizza no pudo ser modificada");
+        }
+        
+        ocultarBotones();
     }//GEN-LAST:event_botonModificarActionPerformed
 
     /**
