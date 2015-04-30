@@ -1,12 +1,8 @@
-/** 
- * Nombre del Archivo: ItemPedidoPK.java 
- * Fecha de Creacion: 28/04/2015 
- * Autores: 	JULIAN GARCIA RICO (1225435)
-		DIEGO FERNANDO BEDOYA (1327749)
-		CRISTIAN ALEXANDER VALENCIA TORRES (1329454)
-		OSCAR STEVEN ROMERO BERON (1326750) 
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package Logica;
 
 import java.io.Serializable;
@@ -14,14 +10,17 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
-
+/**
+ *
+ * @author android
+ */
 @Embeddable
 public class ItemPedidoPK implements Serializable {
     @Basic(optional = false)
-    @Column(name = "factura_id")
+    @Column(name = "factura_id", nullable = false)
     private int facturaId;
     @Basic(optional = false)
-    @Column(name = "item")
+    @Column(nullable = false)
     private int item;
 
     public ItemPedidoPK() {
@@ -76,5 +75,5 @@ public class ItemPedidoPK implements Serializable {
     public String toString() {
         return "Logica.ItemPedidoPK[ facturaId=" + facturaId + ", item=" + item + " ]";
     }
-
-} // Fin de la clase ItemPedidoPK
+    
+}

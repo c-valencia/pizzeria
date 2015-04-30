@@ -1,26 +1,30 @@
-/** 
- * Nombre del Archivo: FacturaJpaController.java 
- * Fecha de Creacion: 28/04/2015 
- * Autores: 	JULIAN GARCIA RICO (1225435)
-		DIEGO FERNANDO BEDOYA (1327749)
-		CRISTIAN ALEXANDER VALENCIA TORRES (1329454)
-		OSCAR STEVEN ROMERO BERON (1326750) 
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package persistencia;
 
 import Logica.Factura;
 import java.io.Serializable;
-import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import Logica.ItemPedido;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import persistencia.exceptions.IllegalOrphanException;
 import persistencia.exceptions.NonexistentEntityException;
+import persistencia.exceptions.PreexistingEntityException;
 
-
+/**
+ *
+ * @author android
+ */
 public class DaoFactura implements Serializable {
 
     public DaoFactura(EntityManagerFactory emf) {
@@ -32,13 +36,36 @@ public class DaoFactura implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(Factura factura) {
+    public void create(Factura factura) throws PreexistingEntityException, Exception {
+        if (factura.getItemPedidoCollection() == null) {
+            factura.setItemPedidoCollection(new ArrayList<ItemPedido>());
+        }
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+            Collection<ItemPedido> attachedItemPedidoCollection = new ArrayList<ItemPedido>();
+            for (ItemPedido itemPedidoCollectionItemPedidoToAttach : factura.getItemPedidoCollection()) {
+                itemPedidoCollectionItemPedidoToAttach = em.getReference(itemPedidoCollectionItemPedidoToAttach.getClass(), itemPedidoCollectionItemPedidoToAttach.getItemPedidoPK());
+                attachedItemPedidoCollection.add(itemPedidoCollectionItemPedidoToAttach);
+            }
+            factura.setItemPedidoCollection(attachedItemPedidoCollection);
             em.persist(factura);
+            for (ItemPedido itemPedidoCollectionItemPedido : factura.getItemPedidoCollection()) {
+                Factura oldFacturaOfItemPedidoCollectionItemPedido = itemPedidoCollectionItemPedido.getFactura();
+                itemPedidoCollectionItemPedido.setFactura(factura);
+                itemPedidoCollectionItemPedido = em.merge(itemPedidoCollectionItemPedido);
+                if (oldFacturaOfItemPedidoCollectionItemPedido != null) {
+                    oldFacturaOfItemPedidoCollectionItemPedido.getItemPedidoCollection().remove(itemPedidoCollectionItemPedido);
+                    oldFacturaOfItemPedidoCollectionItemPedido = em.merge(oldFacturaOfItemPedidoCollectionItemPedido);
+                }
+            }
             em.getTransaction().commit();
+        } catch (Exception ex) {
+            if (findFactura(factura.getFacturaId()) != null) {
+                throw new PreexistingEntityException("Factura " + factura + " already exists.", ex);
+            }
+            throw ex;
         } finally {
             if (em != null) {
                 em.close();
@@ -46,12 +73,45 @@ public class DaoFactura implements Serializable {
         }
     }
 
-    public void edit(Factura factura) throws NonexistentEntityException, Exception {
+    public void edit(Factura factura) throws IllegalOrphanException, NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+            Factura persistentFactura = em.find(Factura.class, factura.getFacturaId());
+            Collection<ItemPedido> itemPedidoCollectionOld = persistentFactura.getItemPedidoCollection();
+            Collection<ItemPedido> itemPedidoCollectionNew = factura.getItemPedidoCollection();
+            List<String> illegalOrphanMessages = null;
+            for (ItemPedido itemPedidoCollectionOldItemPedido : itemPedidoCollectionOld) {
+                if (!itemPedidoCollectionNew.contains(itemPedidoCollectionOldItemPedido)) {
+                    if (illegalOrphanMessages == null) {
+                        illegalOrphanMessages = new ArrayList<String>();
+                    }
+                    illegalOrphanMessages.add("You must retain ItemPedido " + itemPedidoCollectionOldItemPedido + " since its factura field is not nullable.");
+                }
+            }
+            if (illegalOrphanMessages != null) {
+                throw new IllegalOrphanException(illegalOrphanMessages);
+            }
+            Collection<ItemPedido> attachedItemPedidoCollectionNew = new ArrayList<ItemPedido>();
+            for (ItemPedido itemPedidoCollectionNewItemPedidoToAttach : itemPedidoCollectionNew) {
+                itemPedidoCollectionNewItemPedidoToAttach = em.getReference(itemPedidoCollectionNewItemPedidoToAttach.getClass(), itemPedidoCollectionNewItemPedidoToAttach.getItemPedidoPK());
+                attachedItemPedidoCollectionNew.add(itemPedidoCollectionNewItemPedidoToAttach);
+            }
+            itemPedidoCollectionNew = attachedItemPedidoCollectionNew;
+            factura.setItemPedidoCollection(itemPedidoCollectionNew);
             factura = em.merge(factura);
+            for (ItemPedido itemPedidoCollectionNewItemPedido : itemPedidoCollectionNew) {
+                if (!itemPedidoCollectionOld.contains(itemPedidoCollectionNewItemPedido)) {
+                    Factura oldFacturaOfItemPedidoCollectionNewItemPedido = itemPedidoCollectionNewItemPedido.getFactura();
+                    itemPedidoCollectionNewItemPedido.setFactura(factura);
+                    itemPedidoCollectionNewItemPedido = em.merge(itemPedidoCollectionNewItemPedido);
+                    if (oldFacturaOfItemPedidoCollectionNewItemPedido != null && !oldFacturaOfItemPedidoCollectionNewItemPedido.equals(factura)) {
+                        oldFacturaOfItemPedidoCollectionNewItemPedido.getItemPedidoCollection().remove(itemPedidoCollectionNewItemPedido);
+                        oldFacturaOfItemPedidoCollectionNewItemPedido = em.merge(oldFacturaOfItemPedidoCollectionNewItemPedido);
+                    }
+                }
+            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
@@ -69,7 +129,7 @@ public class DaoFactura implements Serializable {
         }
     }
 
-    public void destroy(Integer id) throws NonexistentEntityException {
+    public void destroy(Integer id) throws IllegalOrphanException, NonexistentEntityException {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -80,6 +140,17 @@ public class DaoFactura implements Serializable {
                 factura.getFacturaId();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The factura with id " + id + " no longer exists.", enfe);
+            }
+            List<String> illegalOrphanMessages = null;
+            Collection<ItemPedido> itemPedidoCollectionOrphanCheck = factura.getItemPedidoCollection();
+            for (ItemPedido itemPedidoCollectionOrphanCheckItemPedido : itemPedidoCollectionOrphanCheck) {
+                if (illegalOrphanMessages == null) {
+                    illegalOrphanMessages = new ArrayList<String>();
+                }
+                illegalOrphanMessages.add("This Factura (" + factura + ") cannot be destroyed since the ItemPedido " + itemPedidoCollectionOrphanCheckItemPedido + " in its itemPedidoCollection field has a non-nullable factura field.");
+            }
+            if (illegalOrphanMessages != null) {
+                throw new IllegalOrphanException(illegalOrphanMessages);
             }
             em.remove(factura);
             em.getTransaction().commit();
@@ -135,5 +206,5 @@ public class DaoFactura implements Serializable {
             em.close();
         }
     }
-
-} // Fin de la clase DaoFactura
+    
+}

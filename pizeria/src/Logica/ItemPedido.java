@@ -1,25 +1,26 @@
-/** 
- * Nombre del Archivo: ItemPedido.java 
- * Fecha de Creacion: 28/04/2015 
- * Autores: 	JULIAN GARCIA RICO (1225435)
-		DIEGO FERNANDO BEDOYA (1327749)
-		CRISTIAN ALEXANDER VALENCIA TORRES (1329454)
-		OSCAR STEVEN ROMERO BERON (1326750) 
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package Logica;
 
 import java.io.Serializable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
-
+/**
+ *
+ * @author android
+ */
 @Entity
-@Table(name = "item_pedido")
+@Table(name = "item_pedido", catalog = "pizeria", schema = "public")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "ItemPedido.findAll", query = "SELECT i FROM ItemPedido i"),
@@ -29,6 +30,9 @@ public class ItemPedido implements Serializable {
     private static final long serialVersionUID = 1L;
     @EmbeddedId
     protected ItemPedidoPK itemPedidoPK;
+    @JoinColumn(name = "factura_id", referencedColumnName = "factura_id", nullable = false, insertable = false, updatable = false)
+    @ManyToOne(optional = false)
+    private Factura factura;
 
     public ItemPedido() {
     }
@@ -47,6 +51,14 @@ public class ItemPedido implements Serializable {
 
     public void setItemPedidoPK(ItemPedidoPK itemPedidoPK) {
         this.itemPedidoPK = itemPedidoPK;
+    }
+
+    public Factura getFactura() {
+        return factura;
+    }
+
+    public void setFactura(Factura factura) {
+        this.factura = factura;
     }
 
     @Override
@@ -73,5 +85,5 @@ public class ItemPedido implements Serializable {
     public String toString() {
         return "Logica.ItemPedido[ itemPedidoPK=" + itemPedidoPK + " ]";
     }
-
-} // Fin de la clase ItemPedido
+    
+}
